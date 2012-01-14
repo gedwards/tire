@@ -5,13 +5,17 @@ module Tire
       extend  ActiveModel::Naming
       include ActiveModel::Conversion
 
-      # Create new instance, recursively converting all Hashes to Item
+      def initialize(attributes={})
+        replace(attributes)
+      end
+
+      # Updates all attributes, recursively converting all Hashes to Item
       # and leaving everything else alone.
       #
-      def initialize(args={})
-        raise ArgumentError, "Please pass a Hash-like object" unless args.respond_to?(:each_pair)
+      def replace(attributes)
+        raise ArgumentError, "Please pass a Hash-like object" unless attributes.respond_to?(:each_pair)
         @attributes = {}
-        args.each_pair do |key, value|
+        attributes.each_pair do |key, value|
           if value.is_a?(Array)
             @attributes[key.to_sym] = value.map { |item| @attributes[key.to_sym] = item.is_a?(Hash) ? Item.new(item.to_hash) : item }
           else
